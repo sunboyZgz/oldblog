@@ -1,0 +1,227 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>从建立建立socket连接看三次握手 - sunBoy</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="sunBoy,"> 
+    <meta name="description" content="
+​    本文任然是对于当前阅读的一个知识梳理，衔接前文了解在地址输入栏中简单的按下一个回车背后复杂的故事，上文讲到通过建立socket从DNS服务器拿到域名解析后的地址ip，但是该过程是一个基于,"> 
+    <meta name="author" content="Zgz"> 
+    <link rel="alternative" href="atom.xml" title="sunBoy" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">sunBoy</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" target="_blank" rel="noopener" href="https://sunboyzgz.github.io/" data-url="https://sunboyzgz.github.io/"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">从建立建立socket连接看三次握手</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">从建立建立socket连接看三次握手</h1>
+        <div class="stuff">
+            <span>九月 11, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <blockquote>
+<p>​    本文任然是对于当前阅读的一个知识梳理，衔接前文<a target="_blank" rel="noopener" href="https://sunboyzgz.github.io/2021/09/09/what-happend-when--press-enter/">了解在地址输入栏中简单的按下一个回车背后复杂的故事</a>，上文讲到通过建立<code>socket</code>从DNS服务器拿到域名解析后的地址<code>ip</code>，但是该过程是一个基于<code>udp</code>协议的传输。而我今天梳理的是一种基于<code>tcp</code>协议的传输。</p>
+</blockquote>
+<p>基于<code>udp</code>的传输：只负责包的发出和接受</p>
+<p>基于<code>tcp</code>的传输：在<code>udp</code>的<strong>功能基础</strong>之上，提供了一些丢包判断的机制，以及丢包重传的机制。</p>
+<p>在网络传输的过程中，往往会发生一些包丢的问题，基于<code>tcp</code>协议的网络传输更加严谨相比于基于<code>udp</code>的传输，更加严谨，它提供了一些丢包判断的机制，以及丢包重传的机制。</p>
+<h1 id="正题开始"><a href="#正题开始" class="headerlink" title="正题开始"></a>正题开始</h1><p>建立一次<code>tcp</code>连接我们首先应该从，套接字的创建开始讲，首先我们需要知道下面的概念：</p>
+<ol>
+<li><p>套接字：我们首先需要建立一条可靠的”网络线路”，这条网络线路是需要客户端与服务端两边提供可以相互连接的套接字才能成功建立。 <strong>套接字并非实体</strong>。</p>
+</li>
+<li><p>客户端：我们可以简单的理解发出请求并需要服务端提供响应的就是客户端。</p>
+<p>服务端：根据客户端的请求提供响应。</p>
+</li>
+<li><p>套接字相互识别：服务端套接字与客户端套接字需要一个相互机制才能建立<code>tcp</code>连接。</p>
+</li>
+<li><p>如果说<code>描述符</code>是用来在一台计算机内部识别套接字的机制，那么<code>端口号</code>就是用来让通信的另一方能够识别出套接字的机制。</p>
+</li>
+<li><p>….</p>
+</li>
+</ol>
+<p><strong>此图来源《网络是怎样连接的》</strong></p>
+<p><img src="https://blog-zgz.oss-cn-hangzhou.aliyuncs.com/tcp-ip/%E5%BA%94%E7%94%A8-%E5%8D%8F%E8%AE%AE%E6%A0%88-%E7%A1%AC%E4%BB%B6.jpg" alt="此图来源：《网络是怎样连接的》"></p>
+<h4 id="连接"><a href="#连接" class="headerlink" title="连接"></a>连接</h4><p>下面我们来说一说通过套接字建立的过程。</p>
+<ol>
+<li>服务器端调用Socket库创建一个套接字并监听某个端口等待客户端连接。</li>
+<li>就浏览器客户端来说，使用解析<code>url</code>获得的<code>ip</code>以及提前知道的服务器端口号，就如浏览器默认http协议使用80端口一样。</li>
+<li>找到端口后监听可靠性连接，俗称三次握手</li>
+</ol>
+<p>我们可以使用下面我们比较熟悉的方式来进行理解</p>
+<p><strong>伪代码</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;服务端</span><br><span class="line">socket&lt;描述符&gt; &#x3D; Socket()</span><br><span class="line">socket&lt;描述符&gt;.listen(80, () &#x3D;&gt; &#123;do something ...&#125;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;客户端</span><br><span class="line">socket&lt;描述符&gt; &#x3D; Socket(ip, port)</span><br><span class="line">socket&lt;描述符&gt;.connect()</span><br></pre></td></tr></table></figure>
+<p>上面代码的socket就充当了<code>描述符</code>的作用，<code>描述符</code>记录了与通信相关的一些信息，使用<code>描述符</code>就能让我们在发起多个不同的请求时，不会错误连接。</p>
+<p>然后我们具体关注<code>socket.connect()</code>这部分的内容</p>
+<h4 id="三次握手"><a href="#三次握手" class="headerlink" title="三次握手"></a>三次握手</h4><p>一段请求数据在经过<code>tcp</code>模块后会被包装上<code>tcp</code>头部。具体的格式与内容可以百度。</p>
+<p>三次握手主要是通过控制位的真值进行操作，具体操作<code>ACK</code>,<code>SYN</code></p>
+<ol>
+<li>客户端向服务器发出第一次连接请求：<code>tcp</code>头部中包括<code>发出方</code>端口号，<code>接受方</code>端口号，<code>控制位信息</code>，等信息。<strong>服务器返回一段数据包给客户端</strong>，其中<code>tcp</code>头部<code>控制位信息</code>的<code>SYN</code>位设为1,<code>ACK</code>位设为1。相当于告知客户端：“我收到了你的信号”。相当于完成第一次握手。</li>
+<li>客户端收到服务器返回的信号，但是服务器此时并不知道客户端能够收到他的消息，所以客户端需要再次发送一段数据包给服务端，告诉服务端它能够收到信号，这段数据包中<code>tcp</code>头部<code>控制位信息</code>的<code>SYN</code>位设为1,<code>ACK</code>位设为1。相当于告诉服务器：“我也能收到你的信号”。此时完成了第二次握手。</li>
+<li>最终服务器收到了客户端的第二个信号。服务端就知道他能够和客户端双向传输了。此时完成了三次握手。</li>
+</ol>
+<p><img src="https://blog-zgz.oss-cn-hangzhou.aliyuncs.com/tcp-ip/tcp_ip%20%E6%95%B0%E6%8D%AE%E6%94%B6%E5%8F%91.png"></p>
+<p>在三次握手之后就是数据的收发了。</p>
+<p>在这里不知道有没有发现上面客户端第一次发出消息那行说了：“<code>tcp</code>头部中包括<code>发出方</code>端口号”。这里我们并没有设置端口号啊，那这个端口号怎么来的呢。原来我们我们进行socket调用系统就会为我们随机分配一个有效端口号，这个有效端口应是小于16位的，具体可百度，这个端口号会被存入描述符的地址空间。然后我们请求时就都会使用这个端口进行操作。</p>
+<p>完成收发应当是四次挥手了</p>
+<h4 id="断开"><a href="#断开" class="headerlink" title="断开"></a>断开</h4><p><strong>四次挥手</strong></p>
+<p>四次挥手与三次握手类似，主要控制控制位的<code>FIN</code> <code>SYN</code>位。</p>
+<p>具体过程</p>
+<ol>
+<li>服务器完成所有的数据发送，首先发出断开请求此时讲<code>FIN</code>位设为1，给客户端返回断开信息</li>
+<li>客户端就收到服务器的断开信息并给服务器发送ACK（这个ACK是用来标识收到了多少个字节数据的），用于完整性校验</li>
+<li>客户端发出断开请求此时讲<code>FIN</code>位设为1，给客户端返回断开信息</li>
+<li>服务端收到客户端你的断开信息并给服务器发送ACK</li>
+</ol>
+<p><img src="https://blog-zgz.oss-cn-hangzhou.aliyuncs.com/tcp-ip/tcp_ip%20%E6%95%B0%E6%8D%AE%E6%94%B6%E5%8F%91%20(1).png"></p>
+<p>断开的最后会删除两端套接字，这样从建立连接到断开连接就结束了。</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='true'
+        data-ci='8d00cc12cdbdc3de1409'
+        data-cs='6a1c22eca394bdb3117a91951a80c87c48f98732'
+        data-r='sunboyZgz.github.io'
+        data-o='sunboyZgz'
+        data-a='sunboyZgz'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</html>

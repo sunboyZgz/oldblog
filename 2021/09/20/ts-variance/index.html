@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>typescript中的协变、逆变 - sunBoy</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="sunBoy,"> 
+    <meta name="description" content="typescript中的协变、逆变
+​    想要写出更加优秀的类型编程co-variance（协变）contra-variance（逆变）这类知识是我们必须掌握的。这篇记录也仅仅是为了方便之后哪天,"> 
+    <meta name="author" content="Zgz"> 
+    <link rel="alternative" href="atom.xml" title="sunBoy" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">sunBoy</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" target="_blank" rel="noopener" href="https://sunboyzgz.github.io/" data-url="https://sunboyzgz.github.io/"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">typescript中的协变、逆变</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">typescript中的协变、逆变</h1>
+        <div class="stuff">
+            <span>九月 20, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E8%BF%9B%E9%98%B6/" rel="tag">进阶</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <h1 id="typescript中的协变、逆变"><a href="#typescript中的协变、逆变" class="headerlink" title="typescript中的协变、逆变"></a>typescript中的协变、逆变</h1><blockquote>
+<p>​    想要写出更加优秀的类型编程co-variance（协变）contra-variance（逆变）这类知识是我们必须掌握的。这篇记录也仅仅是为了方便之后哪天这块知识在应用过程中出现问题后，能够根据此篇，来快速定位编写代码中的问题。这篇也仅仅是一些学习资料的记录。文中许多表述，都是个人的理解毕竟本人学历较低英语水平较差，资料中的表述多有理解不充分的地方。</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=EInunOVRsUU">资料的源链</a>（需要科学上网）</p>
+<p>首先我们需要知道以下的概念。在泛型编程中泛型参数会影响类型泛型的关系。</p>
+<p>出于<code>ts</code>采用的是结构类型系统，这里我们用 <code>subtype</code> 来表示来表示可分配的关系。泛型参数引起的协变、逆变都是设计者出于类型安全性的问题而设计的。</p>
+<p>以下的例子我们都以<code>Dog</code>、<code>Animal</code>为基本类型,根据类型关系<code>Dog extends Animal</code> 进行分析</p>
+<p>定义中以<code>List&lt;T&gt;</code> 来阐述关系</p>
+<h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><h4 id="co-variance定义"><a href="#co-variance定义" class="headerlink" title="co-variance定义"></a>co-variance定义</h4><p>在<code>Dog is subtype of Animal</code>的情况下，<code>List&lt;Dog&gt; is subtypeof List&lt;Animal&gt;</code>我们称这种<code>List&lt;T&gt;</code>泛型变化为协变</p>
+<p><img src="https://blog-zgz.oss-cn-hangzhou.aliyuncs.com/ts/variance/ts.png"></p>
+<h4 id="contra-variance定义"><a href="#contra-variance定义" class="headerlink" title="contra-variance定义"></a>contra-variance定义</h4><p>在<code>Dog is subtype of Animal</code>的情况下，<code>List&lt;Animal&gt; is subtypeof List&lt;Dog&gt;</code> 我们称这种<code>List&lt;T&gt;</code>泛型变化为逆变</p>
+<p><img src="https://blog-zgz.oss-cn-hangzhou.aliyuncs.com/ts/variance/ts2.png"></p>
+<h4 id="in-variance定义（这里的我们可以理解为独立类型）"><a href="#in-variance定义（这里的我们可以理解为独立类型）" class="headerlink" title="in-variance定义（这里的我们可以理解为独立类型）"></a>in-variance定义（这里的我们可以理解为独立类型）</h4><p>在<code>Dog is subtype of Animal</code>的情况下，<code>List&lt;Animal&gt; 与 List&lt;Dog&gt;</code> 没有什么关系</p>
+<h4 id="bi-variance定义（能够相互赋值）"><a href="#bi-variance定义（能够相互赋值）" class="headerlink" title="bi-variance定义（能够相互赋值）"></a>bi-variance定义（能够相互赋值）</h4><p>在<code>Dog is subtype of Animal</code>的情况下，<code>List&lt;Animal&gt; 与 List&lt;Dog&gt;</code> 能够相互赋值</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> List&lt;T&gt; = T[]</span><br><span class="line"><span class="keyword">const</span> animals:List&lt;Animal&gt; = [] <span class="keyword">as</span> List&lt;Animal&gt;</span><br><span class="line"><span class="keyword">const</span> dogs:List&lt;Dog&gt; = animals      <span class="comment">//no error</span></span><br><span class="line"><span class="keyword">const</span> animals2: List&lt;Animal&gt; = dogs <span class="comment">//no error</span></span><br></pre></td></tr></table></figure>
+<p>做完这些定义我们可以看几个例子以此来搞明白这么做有什么意义。</p>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//base types</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line">  <span class="keyword">public</span> weight = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dog</span> <span class="keyword">extends</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line">  <span class="keyword">public</span> isGoodBoy = <span class="literal">true</span>;</span><br><span class="line">  <span class="keyword">public</span> <span class="function"><span class="title">bark</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">&quot;wofi&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cat</span> <span class="keyword">extends</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line">  <span class="keyword">public</span> isPlotting: <span class="string">&quot;yes&quot;</span> | <span class="string">&quot;no&quot;</span> = <span class="string">&quot;yes&quot;</span>;</span><br><span class="line">  <span class="keyword">public</span> <span class="function"><span class="title">play</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.error(<span class="string">&quot;miau&quot;</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="例子1"><a href="#例子1" class="headerlink" title="例子1"></a>例子1</h4><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> Cage&lt;T&gt; &#123;</span><br><span class="line">  <span class="keyword">readonly</span> animal: T;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> dogCage: Cage&lt;Dog&gt; = &#123; <span class="attr">animal</span>: <span class="keyword">new</span> Dog() &#125;;</span><br><span class="line"><span class="keyword">let</span> cage: Cage&lt;Animal&gt; = dogCage; <span class="comment">//这里类型安全因为Animal是关系链的最高级，所有与之有关的对象都是对其进行扩展</span></span><br><span class="line"><span class="keyword">let</span> catCage: Cage&lt;Cat&gt; = cage; <span class="comment">//这里cage实际已经被之前的操作换成了dogCage,并且ts编译器已检查出了错误</span></span><br><span class="line">catCage.animal.play(); 		   <span class="comment">//假设我们让编译通过，catCage中存在的其实是dog对象，不存在play方法，因此类型不安全</span></span><br></pre></td></tr></table></figure>
+<p>例1说明<code>readonly</code>的<code>field</code>引起泛型关系的<code>co-variance</code></p>
+<h4 id="例子2"><a href="#例子2" class="headerlink" title="例子2"></a>例子2</h4><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> Mother&lt;T&gt; &#123;</span><br><span class="line">  create: <span class="function">() =&gt;</span> T;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> dogMother: Mother&lt;Dog&gt; = &#123;</span><br><span class="line">  <span class="function"><span class="title">create</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Dog();</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">let</span> animationMother: Mother&lt;Animal&gt; = dogMother;<span class="comment">//success</span></span><br><span class="line"><span class="keyword">let</span> catMother: Mother&lt;Cat&gt; = animationMother; <span class="comment">//error:&#x27;Mother&lt;Animal&gt;&#x27; is not assignable to type &#x27;Mother&lt;Cat&gt;&#x27;</span></span><br><span class="line">catMother.create().play(); <span class="comment">//与例1相同狗狗被当成猫对待类型不安全=&gt;return type是co-variance</span></span><br></pre></td></tr></table></figure>
+<p>例2说明<code>function signature(函数签名)</code>方法的<code>return type</code>引起泛型关系的<code>contra-variance</code></p>
+<h4 id="例子3"><a href="#例子3" class="headerlink" title="例子3"></a>例子3</h4><figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//例3</span></span><br><span class="line"><span class="keyword">interface</span> Groomer&lt;T&gt; &#123;</span><br><span class="line">  cuthair: <span class="function">(<span class="params">animal: T</span>) =&gt;</span> <span class="built_in">void</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> dogGroomer: Groomer&lt;Dog&gt; = &#123;</span><br><span class="line">  <span class="function"><span class="title">cuthair</span>(<span class="params">dog</span>)</span> &#123;</span><br><span class="line">    dog.bark(); <span class="comment">//这里调用了子类独有的操作狗叫</span></span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">let</span> animalGroomer: Groomer&lt;Animal&gt; = dogGroomer; <span class="comment">//Error: 因为狗狗是对animal的拓展，animal中不存在bark方法</span></span><br><span class="line">animalGroomer.cuthair(<span class="keyword">new</span> Animal()); <span class="comment">//这里假设能进行编译，运行时将会有 dog.bark is not a function报错</span></span><br><span class="line"><span class="keyword">let</span> animalGroomer2: Groomer&lt;Animal&gt; = &#123;</span><br><span class="line">  <span class="function"><span class="title">cuthair</span>(<span class="params">animal</span>)</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(animal.weight); <span class="comment">//所有的动物都具有的weight，所以猫猫也可以cuthair</span></span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">let</span> catGroomer: Groomer&lt;Cat&gt; = animalGroomer2; <span class="comment">//当方法参数的变化引起contra-variance</span></span><br></pre></td></tr></table></figure>
+<p>例子3说明<code>function signature(函数签名)</code>方法的参数位引起泛型关系的`contra-variance</p>
+<h4 id="得出一个普遍结论"><a href="#得出一个普遍结论" class="headerlink" title="得出一个普遍结论"></a>得出一个普遍结论</h4><ul>
+<li>1.由方法实现产出的为co-variance </li>
+<li>2.参与到方法实现中的为cotra-variance</li>
+</ul>
+<h2 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h2><p>针对函数参数位，我在上面写下结论的时候有带上<code>function signature(函数签名)</code>的字样</p>
+<p>那什么是方法签名呢？</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> lll &#123;</span><br><span class="line">	methods(): <span class="built_in">void</span>;           	<span class="comment">//method signature</span></span><br><span class="line">	functions: <span class="function">() =&gt;</span> <span class="built_in">void</span>;		<span class="comment">//function signature</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>为了使这两种表示产生类型编程时的不同，我们需要<code>--strictFunctiontypes</code>，这是<code>针对于函数参数位</code>的检查<code>function signature</code>会采用更加严格的方式</p>
+<ol>
+<li><code>strictFunctiontype</code> 只会影响<code>function signatures</code>，所以method signature是bi-variance,例如：lib.es5.ts库中类似Array其中的method signature不受到<code>strictFunctiontype</code>影响</li>
+<li>contra-variance - when used in function signatures with strictFunctiontype(使用function signature引起逆变)</li>
+<li>bi-variance - when used in function signatures without strictFunctiontype</li>
+<li>bi-variance - when used in method signatures</li>
+</ol>
+<h4 id="为什么在参数位置的variance这么复杂？"><a href="#为什么在参数位置的variance这么复杂？" class="headerlink" title="为什么在参数位置的variance这么复杂？"></a>为什么在参数位置的variance这么复杂？</h4><p>为了js的用户群里能更快的迁移是其中的一点，针对老练的玩家可以使用<code>strictFunctiontype</code>编写出更加优秀的类型代码，而针对初级玩家就可以规避这些编译问题。</p>
+<h4 id="类型编程建议"><a href="#类型编程建议" class="headerlink" title="类型编程建议"></a>类型编程建议</h4><ol>
+<li>可以更多地使用readonly</li>
+<li>更多地使用function signatures</li>
+<li>在接口中考虑variance<ol>
+<li>优先 co / contra variance</li>
+<li>其次使用invariance</li>
+<li>尽可能少的bi-variance</li>
+</ol>
+</li>
+</ol>
+<p>bi-variance虽然不会给你带来很多红色的波浪线但是类型编程带来的程序维护性的收益也就更低。</p>
+<p>比如将例子3进行更改</p>
+<figure class="highlight ts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//例3</span></span><br><span class="line"><span class="keyword">interface</span> Groomer&lt;T&gt; &#123;</span><br><span class="line">  cuthair(animal: T): <span class="built_in">void</span>; <span class="comment">//这里从原来的function signature改为method signature</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> dogGroomer: Groomer&lt;Dog&gt; = &#123;</span><br><span class="line">  <span class="function"><span class="title">cuthair</span>(<span class="params">dog</span>)</span> &#123;</span><br><span class="line">    dog.bark(); <span class="comment">//这里调用了子类独有的操作狗叫</span></span><br><span class="line">  &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">let</span> animalGroomer: Groomer&lt;Animal&gt; = dogGroomer;</span><br><span class="line">animalGroomer.cuthair(<span class="keyword">new</span> Animal()); <span class="comment">//这里已经不会有类型检查的报错了，但是运行时将会有 dog.bark is not a function报错</span></span><br></pre></td></tr></table></figure>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='true'
+        data-ci='8d00cc12cdbdc3de1409'
+        data-cs='6a1c22eca394bdb3117a91951a80c87c48f98732'
+        data-r='sunboyZgz.github.io'
+        data-o='sunboyZgz'
+        data-a='sunboyZgz'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</html>

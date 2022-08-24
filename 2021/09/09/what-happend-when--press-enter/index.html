@@ -1,0 +1,205 @@
+
+<!DOCTYPE html>
+<html lang="en" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>图解地址栏按下回车后到底发生了什么 - sunBoy</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="sunBoy,"> 
+    <meta name="description" content="
+如何让阅读后进入脑中的知识点更加有体系，如何让抽象的知识变的更加活灵活现，阅读后的梳理可以让我们更好地做到这一点。同时实践能够让我们更加清楚地了解新知识的应用场景。这篇便是我学习网络的初章。
+
+了,"> 
+    <meta name="author" content="Zgz"> 
+    <link rel="alternative" href="atom.xml" title="sunBoy" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+    
+<link rel="stylesheet" href="/css/diaspora.css">
+
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({
+              google_ad_client: "ca-pub-8691406134231910",
+              enable_page_level_ads: true
+         });
+    </script>
+    <script async custom-element="amp-auto-ads"
+        src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+<body class="loading">
+    <span id="config-title" style="display:none">sunBoy</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <a class="iconfont icon-home image-icon" target="_blank" rel="noopener" href="https://sunboyzgz.github.io/" data-url="https://sunboyzgz.github.io/"></a>
+    <div title="播放/暂停" class="iconfont icon-play"></div>
+    <h3 class="subtitle">图解地址栏按下回车后到底发生了什么</h3>
+    <div class="social">
+        <div>
+            <div class="share">
+                <a title="获取二维码" class="iconfont icon-scan" href="javascript:;"></a>
+            </div>
+            <div id="qr"></div>
+        </div>
+    </div>
+    <div class="scrollbar"></div>
+</div>
+
+    <div class="section">
+        <div class="article">
+    <div class='main'>
+        <h1 class="title">图解地址栏按下回车后到底发生了什么</h1>
+        <div class="stuff">
+            <span>九月 09, 2021</span>
+            
+  <ul class="post-tags-list" itemprop="keywords"><li class="post-tags-list-item"><a class="post-tags-list-link" href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag">网络</a></li></ul>
+
+
+        </div>
+        <div class="content markdown">
+            <blockquote>
+<p>如何让阅读后进入脑中的知识点更加有体系，如何让抽象的知识变的更加活灵活现，阅读后的梳理可以让我们更好地做到这一点。同时实践能够让我们更加清楚地了解新知识的应用场景。这篇便是我学习网络的初章。</p>
+</blockquote>
+<h1 id="了解在地址输入栏中简单的按下一个回车背后复杂的故事"><a href="#了解在地址输入栏中简单的按下一个回车背后复杂的故事" class="headerlink" title="了解在地址输入栏中简单的按下一个回车背后复杂的故事"></a>了解在地址输入栏中简单的按下一个回车背后复杂的故事</h1><p>在了解本文主题之前我们不妨花上小几分钟简单阅读一下一下的内容，或许会有新的收获</p>
+<p>1.浏览器的各种访问目标统称为URI</p>
+<p>2.尽管浏览器能够解析网址并生成HTTP消息，但它本身并不具备将消息发送到网络中的功能，因此这一功能需要委托操作系统来实现</p>
+<p>3.仅凭32位 的IP我们无法区分哪部分是网络号，哪部分是主机号。ip=网络号（xx小区）+主机号（xx室）</p>
+<p>4  <strong>!</strong> 主机号部分<code>bit</code>全为0，表示一个<code>子网</code>如<code>192.168.1.0</code>, <code>192.168.0.0</code></p>
+<p>​    <strong>!</strong> 主机号部分<code>bit</code>全为1，表示一个子<code>网内广播地址</code>如<code>192.168.1.255</code>, <code>192.168.0.255</code></p>
+<p>5.子网掩码为1的部分表示网络号，子网掩码为0的部分表示主机号。</p>
+<p>6.子网掩码表示网络号与主机号之间的边界</p>
+<p>7.在域名中，越靠右的位置表示其层级越高，比如<a target="_blank" rel="noopener" href="http://www.lab.glasscom.com这个域名如果按照公司里的组织结构来说,大概就是“com事业集团glasscom部lab科的www”这样./">www.lab.glasscom.com这个域名如果按照公司里的组织结构来说，大概就是“com事业集团glasscom部lab科的www”这样。</a></p>
+<p>8.服务器一方先创建套接字，然后等待客户端向该套接字连接管道</p>
+<p>9.如果说描述符是用来在一台计算机内部识别套接字的机制，那么端口号就是用来让通信的另一方能够识别出套接字的机制</p>
+<p>10.客户端在创建套接字时，协议栈会为这个套接字随便分配一个端口号。接下来，当协议栈执行连接操作时，会将这个随便分配的端口号通知给服务器。</p>
+<h1 id="正题开始"><a href="#正题开始" class="headerlink" title="正题开始"></a>正题开始</h1><p>​        首先我们都知道<code>url</code>并不是网络通信中真正有效的信息，在网络中我们通过<code>ip</code>来确认目的地服务器，当我们获取到<code>ip</code>后，会将<code>ip</code>等用于网络数据传输的信息一并交给操作系统的协议栈。</p>
+<p>​        这里有一点基础的概念：我们建立在操作系统之上的应用程序并不能之间进行与硬件的沟通，一切应用对于硬件的操作都要通过操作系统调用，不能想当然的认为是应用操作了硬件，显然网络的通信是需要硬件支撑的。</p>
+<p>​        ok，那么我们怎么才能知道目的地的<code>ip</code>呢，答案就是解析你输入的<code>url</code>,就好比电话号码我们不可能记住身边每一个人的电话号码，因为它是并不存在具体的含义。而我们常用的电话簿就用简单易记的名字或者绰号对应了电话号码，比如我们可以轻松的点击”二狗”的头像并联系他。</p>
+<p><code>ip</code> -&gt; 电话号码 , <code>url</code> -&gt; 你对好友的备注,  <code>?</code> -&gt; 电话簿</p>
+<p>问：<code>?</code>处应填入什么？    答案：DNS服务器</p>
+<p>当然，这样形容并不是完全正确，因为在一方面电话簿是一个本地的记录，而DNS不存在于本地。但是就理解来说已经非常易懂了。</p>
+<p>好的那么我们开始讲讲浏览器是如何通过远程访问将<code>ip</code>这一信息拿到手的吧。这里我们值得一说的是我们会忽略一些细节，比如去浏览器解析缓存中存在的<code>url</code>-&gt;<code>ip</code>映射，<code>dns</code> 建立<code>udp</code>通信等并不主要的内容</p>
+<h4 id="图解ip获取的过程"><a href="#图解ip获取的过程" class="headerlink" title="图解ip获取的过程"></a>图解ip获取的过程</h4><p><img src="https://blog-zgz.oss-cn-hangzhou.aliyuncs.com/what-happend-when-press-enter/%E7%BD%91%E7%BB%9C%E4%B8%8E%E6%B5%8F%E8%A7%88%E5%99%A8.png"></p>
+<p>我们主要将目光放在去向DNS服务器的这条路线上。</p>
+<ol>
+<li>首先应用程序会使用系统提供的Socket库创建套接字。在这里我们可以这样思考：为什么我们发出请求到服务器服务器就能给我们响应呢，是因为服务早早就让自己那端创建了一个套接字，当然套接字只是一个抽象的概念，只并不存在实体。然后服务端那边的套接字就一直等着另一个套接字与之连接。就像是管道一样能够传输其中的数据流。</li>
+</ol>
+<p><img src="https://blog-zgz.oss-cn-hangzhou.aliyuncs.com/what-happend-when-press-enter/%E5%A5%97%E6%8E%A5%E5%AD%97.png"></p>
+<p>2.那客户端应该如何去识别他要接入的套接字呢。这些都需要使用到库中的<code>解析器</code>。他会根据输入的<code>url</code>提取出有用的信息比如: <code>端口号</code>。平时我们的浏览器进行网页访问的时候都是直接输入一串<code>url</code>，而不用去设置端口号这是因为浏览器访问http请求默认使用80端口。</p>
+<p>3.那服务器的套接字我们能够分辨出来了，而客户端可能会有多个应用同时对不同的服务端发出请求，怎么样才能让不同的应用找到自己创建的套接字呢？换句话说就是规避数据传输混乱的问题呢，这里就要使用到创建套接字时生成的描述符了。我们只需要知道这相当于是一个套接字的标识即可。</p>
+<p>如果说描述符是用来在一台计算机内部识别套接字的机制，那么端口号就是用来让通信的另一方能够识别出套接字的机制</p>
+<p>此篇仅为阅读《网络是怎样连接的》一书第一章知识的简单梳理。</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls" data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+                <ul id="audio-list" style="display:none">
+                    
+                </ul>
+            
+        </div>
+        
+    <div id='gitalk-container' class="comment link"
+		data-enable='true'
+        data-ae='true'
+        data-ci='8d00cc12cdbdc3de1409'
+        data-cs='6a1c22eca394bdb3117a91951a80c87c48f98732'
+        data-r='sunboyZgz.github.io'
+        data-o='sunboyZgz'
+        data-a='sunboyZgz'
+        data-d='false'
+    >查看评论</div>
+
+
+    </div>
+    
+</div>
+
+
+    </div>
+</div>
+</body>
+
+<script src="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js"></script>
+
+
+<script src="//lib.baomitu.com/jquery/1.8.3/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/typed.js"></script>
+<script src="/js/diaspora.js"></script>
+
+
+<link rel="stylesheet" href="/photoswipe/photoswipe.css">
+<link rel="stylesheet" href="/photoswipe/default-skin/default-skin.css">
+
+
+<script src="/photoswipe/photoswipe.min.js"></script>
+<script src="/photoswipe/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+</html>
